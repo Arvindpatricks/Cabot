@@ -2,12 +2,15 @@ package com.hackadroid.cabot;
 
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -37,11 +40,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private SignInButton signInButton;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
-    private static final String TAG = "LoginActivity";
-
+    private static final String TAG = "LOGIN_ACTIVITY";
+    private static int SPLASH_TIME_OUT = 3000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
@@ -107,7 +114,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //Check if user is signed in and update the UI
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser !=null) {
-            Toast.makeText(LoginActivity.this, "User Already Logged In !", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent homeIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    finish();
+                }
+            }, SPLASH_TIME_OUT);
+
+            //Toast.makeText(LoginActivity.this, "User Already Logged In !", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -125,6 +141,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Authentication Successful.", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "SigninFirebsase : Success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent homeIntent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(homeIntent);
+                                    finish();
+                                }
+                            }, SPLASH_TIME_OUT);
 
                         } else {
                             Log.d(TAG, "SigninFirebsase : Failure");
