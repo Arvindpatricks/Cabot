@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "113372779301-0mlvfsgitqsklo158pn9akuiohbsetku.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hackadroid.cabot",
+            "certificate_hash": "ef15a57b8e01c2f45611da2fcc727e3a909fb91b"
+          }
+        },
+        {
           "client_id": "113372779301-7liokbn66eoa960ikpf0gluqvqfl29pu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
