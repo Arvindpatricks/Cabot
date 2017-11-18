@@ -20,10 +20,19 @@
         android:visibility="gone" />
 
     <ImageView
-        android:layout_width="500px"
         android:id="@+id/logo"
+        android:layout_width="500px"
+        android:layout_height="308dp"
+        android:src="@drawable/ola_uber" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ola_uber"/>
+        android:textColor="@color/colorPrimaryDark"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="50dp"
+        android:text="Cabot"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <ScrollView
         android:id="@+id/login_form"
@@ -31,7 +40,7 @@
         android:layout_height="match_parent">
 
             <com.google.android.gms.common.SignInButton
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="center"
                 android:id="@+id/sign_in_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

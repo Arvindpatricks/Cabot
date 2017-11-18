@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        Log.d("HELLO","User is :"+user.getDisplayName());
-
         //Setting up the Navigation Drawer info from the User details
         emailId.setText(user.getEmail());
         username.setText(user.getDisplayName());
@@ -138,4 +136,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }

@@ -1,6 +1,6 @@
 package com.hackadroid.datamodel;
 
-import android.location.Location;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Map;
 
@@ -14,5 +14,5 @@ public class UserDataModel {
     private String _userId;
     private String _FullName;
     private String _emailId;
-    private Map<String, Location> locations;
+    private Map<String, GeoPoint> locations;
 }
