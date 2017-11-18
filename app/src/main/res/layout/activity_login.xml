@@ -21,6 +21,7 @@
 
     <ImageView
         android:layout_width="500px"
+        android:id="@+id/logo"
         android:layout_height="wrap_content"
         android:src="@drawable/ola_uber"/>
 

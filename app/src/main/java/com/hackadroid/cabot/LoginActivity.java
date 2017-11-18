@@ -2,7 +2,6 @@ package com.hackadroid.cabot;
 
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -11,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -29,19 +31,29 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.hackadroid.datamodel.UserDataModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A login screen that uses FireBase Login via GoogleSignIn
  */
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener , View.OnClickListener{
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener , View.OnClickListener {
 
     private static final int RC_SIGN_IN = 9001;
     private SignInButton signInButton;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
+    protected Animation fadeIn;
+    private ImageView imageView;
     private static final String TAG = "LOGIN_ACTIVITY";
     private static int SPLASH_TIME_OUT = 3000;
+    private static final Logger log = LoggerFactory.getLogger(LoginActivity.class);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +76,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
+        imageView = (ImageView) findViewById(R.id.logo);
+        fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
 
     }
 
@@ -102,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             }catch (ApiException e) {
-                Log.w(TAG, "Google sign in failed...",e);
+                log.error("Google sign in failed...",e);
             }
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         }
@@ -114,15 +128,22 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //Check if user is signed in and update the UI
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser !=null) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent homeIntent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(homeIntent);
-                    finish();
-                }
-            }, SPLASH_TIME_OUT);
 
+            imageView.startAnimation(fadeIn);
+
+            Thread timerThread = new Thread(){
+                public void run(){
+                    try{
+                        sleep (2000);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }finally{
+                        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                        //startActivity(intent);
+                    }
+                }
+            };
+            timerThread.start();
             //Toast.makeText(LoginActivity.this, "User Already Logged In !", Toast.LENGTH_SHORT).show();
         }
 
@@ -137,21 +158,22 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
+
                             //Sign in success, update UI with signed in user
                             Toast.makeText(LoginActivity.this, "Authentication Successful.", Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "SigninFirebsase : Success");
+                            log.info( "SigninFirebsase : Success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent homeIntent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(homeIntent);
-                                    finish();
-                                }
-                            }, SPLASH_TIME_OUT);
+                            UserDataModel userDataModel = new UserDataModel();
+                            userDataModel.set_userId(user.getUid());
+                            userDataModel.set_emailId(user.getEmail());
+                            userDataModel.set_FullName(user.getDisplayName());
+
+                            imageView.startAnimation(fadeIn);
+                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                            //startActivity(intent);
 
                         } else {
-                            Log.d(TAG, "SigninFirebsase : Failure");
+                           log.info("SigninFirebsase : Failure");
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
 

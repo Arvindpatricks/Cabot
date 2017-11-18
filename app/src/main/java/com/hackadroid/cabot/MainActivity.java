@@ -1,8 +1,10 @@
 package com.hackadroid.cabot;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +14,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private TextView emailId;
+    private TextView username;
+    private ImageView profilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +60,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+
+        emailId = (TextView) header.findViewById(R.id.emailId);
+        username = (TextView) header.findViewById(R.id.username);
+        profilePic = (ImageView) header.findViewById(R.id.profile_pic);
+
+        //Getting current user from Firebase Users
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
+        Log.d("HELLO","User is :"+user.getDisplayName());
+
+        //Setting up the Navigation Drawer info from the User details
+        emailId.setText(user.getEmail());
+        username.setText(user.getDisplayName());
+        Picasso.with(getApplicationContext()).load(user.getPhotoUrl()).into(profilePic);
+
     }
 
     @Override
@@ -80,18 +117,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.your_trips) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.favourites) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.messages) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.account_settings) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.support) {
 
+        } else if (id == R.id.logout) {
+            FirebaseAuth.getInstance().signOut();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
